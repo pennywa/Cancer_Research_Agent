@@ -15,4 +15,6 @@ jobs:
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.Cancer_Research }}
-        run: git push --force https://pennywa:$Cancer_Research@huggingface.co/spaces/pennywa/Cancer_Research main
+        run: git push --force https://pennywa:$Cancer_Research@huggingface.co/spaces/pennywa/Cancer_Research_Agent main
+
+        
