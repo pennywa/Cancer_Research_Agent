@@ -3,7 +3,7 @@ from pyvis.network import Network
 
 def generate_roadmap_graph():
     # Initialize Gephi-style network
-    net = Network(height="600px", width="100%", bgcolor="#222222", font_color="white", directed=True)
+    net = Network(height="600px", width="100%", bgcolor="#222222", font_color="white", directed=True, cdn_resources="remote")
     
     # CANCER TYPES (Source AICR: https://www.aicr.org/cancer-survival/cancer-type/?gad_source=1&gad_campaignid=22658424638&gbraid=0AAAAAD7w6z5hHTX4za7nDWOtKRdbNMRuV&gclid=CjwKCAjwyYPOBhBxEiwAgpT8P2G1tNaVGtsO1_pPa7LEQPodGeLjikzeUSjNNIEc88kTudSWEn3OtBoCabkQAvD_BwE) 
     # Blue Nodes
@@ -84,7 +84,17 @@ def generate_roadmap_graph():
     
     net.save_graph("roadmap.html")
     with open("roadmap.html", 'r', encoding='utf-8') as f:
-        return f.read()
+        html_content = f.read()
+
+    # WRAP IN IFRAME: Prevent JS from being blocked or clashing with Gradio
+    iframe_html = f"""
+    <iframe srcdoc='{html_content.replace("'", "&apos;")}' 
+            width="100%" 
+            height="600px" 
+            style="border:none; border-radius: 10px; background-color: #222222;">
+    </iframe>
+    """
+    return iframe_html
 
 # Gradio Tab Component
 with gr.Blocks() as roadmap_page:
