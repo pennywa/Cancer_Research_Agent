@@ -1,3 +1,4 @@
 langchain-community
 arxiv
 gradio
+huggingface_hub==0.24.0
