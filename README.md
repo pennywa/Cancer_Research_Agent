@@ -12,3 +12,7 @@ pinned: false
 
 # Cancer_Research_Agent
 Correlation of Cancer Stage at Diagnosis and its Impact on Survival Rates and Cost of Treatment
+
+## Hugging Face Link: https://huggingface.co/spaces/pennywa/Cancer_Research_Agent
+
+## ArXiv integration: https://docs.langchain.com/oss/python/integrations/tools/arxiv
