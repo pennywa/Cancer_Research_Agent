@@ -97,7 +97,7 @@ with gr.Blocks() as demo:
         with gr.Column(scale=1):
             c_type = gr.Textbox(label="Cancer Type", value="Lung Cancer")
             stage = gr.Dropdown(label="Detection Stage", choices=["0", "1", "2", "3", "4"], value="1")
-            age_input = gr.Slider(0, 100, 65, label="Patient Age")
+            age_input = gr.Slider(0, 100, 50, label="Patient Age")
             gender_input = gr.Checkbox(label="Include Gender Data")
             btn = gr.Button("Run Correlation Analysis", variant="primary")
             
