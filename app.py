@@ -31,7 +31,7 @@ def generate_plot(stage):
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     return plt.gcf()
-
+        
 def oncology_researcher(cancer_type, detection_stage, age, gender):
     """
     Args:
@@ -42,64 +42,60 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
     Returns:
         tuple: (Markdown Research Report, Matplotlib Correlation Plot)
     """
+    # Initialize the wrapper
+    arxiv_wrapper = ArxivAPIWrapper(top_k_results=3, doc_content_chars_max=500)
+    
+    # Start with a clean, academic query
+    search_query = f"{cancer_type} cancer stage {detection_stage} prognosis"
+    if gender:
+        search_query += " clinical outcomes"
+
     try:
-        # Try to fetch research data with error handling
-        # Fetch data using load() to get metadata + content
-        arxiv_wrapper = ArxivAPIWrapper(top_k_results=1, doc_content_chars_max=500)
-        
-        # Refined query to help ArXiv find relevant technical papers
-        search_query = f"{cancer_type} cancer stage {detection_stage} prognosis"
+        # Attempt 1: Load method
         docs = arxiv_wrapper.load(search_query)
-        
         evidence_list = []
+        
         for doc in docs:
-            # Extract URL (Entry ID) and Title from metadata
-            # Fix: Check for both uppercase and lowercase keys to avoid None errors
-           
-            title = (doc.metadata.get('Title') or 
-                     doc.metadata.get('title') or 
-                     "Research Paper")
+            # Check possible metadata keys for the URL
             link = (doc.metadata.get('Entry ID') or 
                     doc.metadata.get('entry_id') or 
                     doc.metadata.get('link') or 
-                    doc.metadata.get('url') or 
-                    'https://arxiv.org/')
+                    "https://arxiv.org/")
             
-            # Get the summary from the page content
+            title = doc.metadata.get('Title') or doc.metadata.get('title') or "Research Paper"
             summary = doc.page_content[:300] + "..."
-            
-            # Combine them into a clickable Markdown format
             evidence_list.append(f"### 📄 [{title}]({link})\n{summary}")
         
-        # Handle empty results so it doesn't default to the "Database Busy" error
-        if not evidence_list:
-            results = "No recent papers found for this specific criteria on ArXiv."
-        else:
+        if evidence_list:
             results = "\n\n".join(evidence_list)
-        
-    except Exception as e:
-         # Fallback message if API fails
-         # Added print(e) to console to help debug actual API issues
-        print(f"Connection Error: {e}")
-        results = "⚠️ The ArXiv research database is currently busy or rate-limited. The visualization below still reflects clinical benchmarks."
+        else:
+            # Attempt 2: If Load found nothing, try .run() method
+            results = arxiv_wrapper.run(search_query)
 
-    # Build report
+    except Exception as e:
+        # Final Fallback - If everything fails, try one last simple .run()
+        print(f"Switching to fallback due to: {e}")
+        try:
+            results = arxiv_wrapper.run(f"{cancer_type} survival")
+        except:
+            # Fallback message if API fails
+            results = "⚠️ The ArXiv research database is currently busy or rate-limited. The visualization below still reflects clinical benchmarks."
+
+    # Build report 
     report = f"""
     # 📑 Clinical Research Report: {cancer_type}
     **Patient Profile:** Age {age} | Diagnostic Stage: {detection_stage}
-    
-    ### 📊 Thesis Analysis
+
+     ### 📊 Thesis Analysis
     Detection at **Stage {detection_stage}** identifies a specific coordinate between diagnostic timing and the resulting clinical-economic burden.
-    Early detection (Stage 0-1) prioritizes curative outcomes at lower systemic costs.
     
     ### 🔍 Evidence & Primary Sources:
     {results}
-    
     ---
-     **Disclaimer:** This agent uses ArXiv API for research purposes only. Not for medical diagnosis.
-     *ALWAYS FACT CHECK and VERIFY, take it with a grain of salt*
+    **Disclaimer:** This agent uses ArXiv API for research purposes only. Not for medical diagnosis.
+     *ALWAYS FACT CHECK and VERIFY*
     """
-    
+
     # Generate plot 
     plot = generate_plot(detection_stage)
     return report, plot
