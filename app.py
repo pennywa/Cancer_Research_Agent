@@ -44,7 +44,7 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
     try:
         # Try to fetch research data with error handling
         # Fetch data using load() to get metadata + content
-        arxiv_wrapper = ArxivAPIWrapper(top_k_results=2, doc_content_chars_max=500)
+        arxiv_wrapper = ArxivAPIWrapper(top_k_results=1, doc_content_chars_max=500)
         
         # Refined query to help ArXiv find relevant technical papers
         search_query = f"{cancer_type} cancer stage {detection_stage} prognosis"
