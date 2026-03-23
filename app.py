@@ -64,11 +64,16 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
             
             title = doc.metadata.get('Title') or doc.metadata.get('title') or "Research Paper"
             summary = doc.page_content[:300] + "..."
-            evidence_list.append(
-                f"### 📄 [{title}]({link})\n"
-                f"**Authors:** *{authors}*\n\n"
-                f"> **Summary:** {summary}"
+
+            # Summary format
+            formatted_entry = (
+            f"### 📄 [{title}]({link})\n\n" 
+            f"**Authors:** *{authors}*\n\n"  
+            f"--- \n"                        
+            f"> **Summary:** {summary}\n\n" 
+            f"\n"                            
             )
+            evidence_list.append(formatted_entry)
         
         if evidence_list:
             results = "\n\n".join(evidence_list)
