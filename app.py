@@ -91,6 +91,7 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
     
     ### 🔍 Evidence & Primary Sources:
     {results}
+    
     ---
     **Disclaimer:** This agent uses ArXiv API for research purposes only. Not for medical diagnosis.
      *ALWAYS FACT CHECK and VERIFY*
