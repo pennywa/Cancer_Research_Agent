@@ -6,9 +6,9 @@ def generate_plot(stage):
     # Simplified Stages 0 through 4
     stages = ["0", "1", "2", "3", "4"]
     # Survival Rates: Stage 0 is close to 100%, Stage 4 is the lowest
-    survival_rates = [98, 85, 60, 30, 15] 
+    survival_rates = [85, 70, 55, 40, 25, 10] 
     # Costs: Stage 0 is minimal, Stage 4 is peak (Immunotherapy/Late-stage care)
-    costs = [10, 35, 75, 130, 190]        # Estimated in $1k USD
+    costs = [25, 50, 75, 100, 125, 150]        # Estimated in $1k USD
     
     plt.figure(figsize=(6, 4))
     # Draw the "Thesis Line" (Inverse Correlation)
@@ -31,16 +31,37 @@ def generate_plot(stage):
     plt.tight_layout()
     return plt.gcf()
 
-def oncology_researcher(cancer_type, detection_stage, age, gender):
-    # Try to fetch research data with error handling
+    def oncology_researcher(cancer_type, detection_stage, age, gender):
+    """
+    Args:
+        cancer_type (str): The specific malignancy to research.
+        detection_stage (str): Stage (0-4).
+        age (int): Patient age for demographic filtering.
+        gender (bool): Flag to include sex-based clinical data.
+    Returns:
+        tuple: (Markdown Research Report, Matplotlib Correlation Plot)
+    """
     try:
-        arxiv = ArxivAPIWrapper(top_k_results=2, doc_content_chars_max=500)
-        query = f"{cancer_type} cancer survival rate stage {detection_stage} age {age} cost"
-        if gender:
-            query += " sex-based clinical differences"
-        results = arxiv.run(query)
+        # Try to fetch research data with error handling
+        # Fetch data using load() to get metadata + content
+        arxiv_wrapper = ArxivAPIWrapper(top_k_results=2, doc_content_chars_max=500)
+        docs = arxiv_wrapper.load(f"{cancer_type} cancer survival rate stage {detection_stage} cost")
+        
+        evidence_list = []
+        for doc in docs:
+            # Extract URL (Entry ID) and Title from metadata
+            title = doc.metadata.get('Title', 'Research Paper')
+            link = doc.metadata.get('Entry ID', 'https://arxiv.org/')
+            # Get the summary from the page content
+            summary = doc.page_content[:300] + "..."
+            
+            # Combine them into a clickable Markdown format
+            evidence_list.append(f"### 📄 [{title}]({link})\n{summary}")
+        
+        results = "\n\n".join(evidence_list) if evidence_list else "No recent papers found for this specific criteria."
+        
     except Exception:
-        # Fallback message if API fails ? or what is happening here 
+         # Fallback message if API fails ? 
         results = "⚠️ The ArXiv research database is currently busy or rate-limited. The visualization below still reflects clinical benchmarks."
 
     # Build report
@@ -52,21 +73,25 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
     Detection at **Stage {detection_stage}** identifies a specific coordinate between diagnostic timing and the resulting clinical-economic burden.
     Early detection (Stage 0-1) prioritizes curative outcomes at lower systemic costs.
     
-    ### 🔍 Evidence Summary:
+    ### 🔍 Evidence & Primary Sources:
     {results}
     
     ---
-    **Disclaimer:** This agent uses ArXiv API for research purposes only. Not for medical diagnosis.
+     **Disclaimer:** This agent uses ArXiv API for research purposes only. Not for medical diagnosis.
+     *ALWAYS FACT CHECK and VERIFY, take it with a grain of salt*
     """
+    
+    # Generate plot
+    plot = generate_plot(detection_stage)
+    return report, plot
     
     # Generate visual
     plot = generate_plot(detection_stage)
-    
     return report, plot
 
 # UI Layout
 with gr.Blocks() as demo:
-    gr.Markdown("# 🏥 Cancer Research Agent (Staging & Economics)")
+    gr.Markdown("# 🏥 Cancer Research Agent (Stage Detection & Cost of Treatment)")
     
     with gr.Row():
         with gr.Column(scale=1):
