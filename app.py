@@ -45,23 +45,34 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
         # Try to fetch research data with error handling
         # Fetch data using load() to get metadata + content
         arxiv_wrapper = ArxivAPIWrapper(top_k_results=2, doc_content_chars_max=500)
-        docs = arxiv_wrapper.load(f"{cancer_type} cancer survival rate stage {detection_stage} cost")
+        
+        # Refined query to help ArXiv find relevant technical papers
+        search_query = f"{cancer_type} cancer stage {detection_stage} prognosis"
+        docs = arxiv_wrapper.load(search_query)
         
         evidence_list = []
         for doc in docs:
             # Extract URL (Entry ID) and Title from metadata
-            title = doc.metadata.get('Title', 'Research Paper')
-            link = doc.metadata.get('Entry ID', 'https://arxiv.org/')
+            # Fix: Check for both uppercase and lowercase keys to avoid None errors
+            title = doc.metadata.get('Title') or doc.metadata.get('title') or 'Research Paper'
+            link = doc.metadata.get('Entry ID') or doc.metadata.get('entry_id') or 'https://arxiv.org/'
+            
             # Get the summary from the page content
             summary = doc.page_content[:300] + "..."
             
             # Combine them into a clickable Markdown format
             evidence_list.append(f"### 📄 [{title}]({link})\n{summary}")
         
-        results = "\n\n".join(evidence_list) if evidence_list else "No recent papers found for this specific criteria."
+        # Handle empty results so it doesn't default to the "Database Busy" error
+        if not evidence_list:
+            results = "No recent papers found for this specific criteria on ArXiv."
+        else:
+            results = "\n\n".join(evidence_list)
         
-    except Exception:
-         # Fallback message if API fails ? 
+    except Exception as e:
+         # Fallback message if API fails
+         # Added print(e) to console to help debug actual API issues
+        print(f"Connection Error: {e}")
         results = "⚠️ The ArXiv research database is currently busy or rate-limited. The visualization below still reflects clinical benchmarks."
 
     # Build report
@@ -81,14 +92,10 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
      *ALWAYS FACT CHECK and VERIFY, take it with a grain of salt*
     """
     
-    # Generate plot
+    # Generate plot 
     plot = generate_plot(detection_stage)
     return report, plot
     
-    # Generate visual
-    plot = generate_plot(detection_stage)
-    return report, plot
-
 # UI Layout
 with gr.Blocks() as demo:
     gr.Markdown("# 🏥 Cancer Research Agent (Stage Detection & Cost of Treatment)")
