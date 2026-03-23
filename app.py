@@ -55,8 +55,15 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
         for doc in docs:
             # Extract URL (Entry ID) and Title from metadata
             # Fix: Check for both uppercase and lowercase keys to avoid None errors
-            title = doc.metadata.get('Title') or doc.metadata.get('title') or 'Research Paper'
-            link = doc.metadata.get('Entry ID') or doc.metadata.get('entry_id') or 'https://arxiv.org/'
+           
+            title = (doc.metadata.get('Title') or 
+                     doc.metadata.get('title') or 
+                     "Research Paper")
+            link = (doc.metadata.get('Entry ID') or 
+                    doc.metadata.get('entry_id') or 
+                    doc.metadata.get('link') or 
+                    doc.metadata.get('url') or 
+                    'https://arxiv.org/')
             
             # Get the summary from the page content
             summary = doc.page_content[:300] + "..."
