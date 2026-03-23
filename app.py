@@ -66,11 +66,10 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
             summary = doc.page_content[:300] + "..."
 
             # Summary format
-            evidence_list.append(f"### 📄 [{title}]({link})")
-            evidence_list.append("---")
-            evidence_list.append(f"**Authors:** *{authors}*")
-            evidence_list.append("---")
-            evidence_list.append(f"> **Summary:** {summary}")
+            evidence_list.append(f"### 📄 [{title}]({link})  ")
+            evidence_list.append(f"**Authors:** *{authors}* ")
+            evidence_list.append(f"> **Summary:** {summary}  ")
+            evidence_list.append("---  ")
         
         if evidence_list:
             results = "\n\n".join(evidence_list)
