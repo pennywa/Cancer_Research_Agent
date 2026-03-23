@@ -9,7 +9,7 @@ python_version: 3.11
 app_file: app.py
 pinned: false
 ---
-🏥 Oncology Research & Interaction Network
+# 🏥 Oncology Research & Interaction Network
 This application allows users to query oncology research while interacting with a dynamic knowledge graph of cancer stages and treatment pathways.
 
 ## Hugging Face Link: https://huggingface.co/spaces/pennywa/Cancer_Research_Agent
