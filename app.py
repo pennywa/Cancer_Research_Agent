@@ -53,4 +53,4 @@ with gr.Blocks() as demo:
         outputs=output
     )
 
-demo.launch(server_name="0.0.0.0", show_error=True)
+demo.launch()
