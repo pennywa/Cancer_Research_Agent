@@ -32,54 +32,54 @@ def generate_plot(stage):
     return plt.gcf()
 
     def oncology_researcher(cancer_type, detection_stage, age, gender):
-    """
-    Args:
-        cancer_type (str): The specific malignancy to research.
-        detection_stage (str): Stage (0-4).
-        age (int): Patient age for demographic filtering.
-        gender (bool): Flag to include sex-based clinical data.
-    Returns:
-        tuple: (Markdown Research Report, Matplotlib Correlation Plot)
-    """
-    try:
-        # Try to fetch research data with error handling
-        # Fetch data using load() to get metadata + content
-        arxiv_wrapper = ArxivAPIWrapper(top_k_results=2, doc_content_chars_max=500)
-        docs = arxiv_wrapper.load(f"{cancer_type} cancer survival rate stage {detection_stage} cost")
-        
-        evidence_list = []
-        for doc in docs:
-            # Extract URL (Entry ID) and Title from metadata
-            title = doc.metadata.get('Title', 'Research Paper')
-            link = doc.metadata.get('Entry ID', 'https://arxiv.org/')
-            # Get the summary from the page content
-            summary = doc.page_content[:300] + "..."
+        """
+        Args:
+            cancer_type (str): The specific malignancy to research.
+            detection_stage (str): Stage (0-4).
+            age (int): Patient age for demographic filtering.
+            gender (bool): Flag to include sex-based clinical data.
+        Returns:
+            tuple: (Markdown Research Report, Matplotlib Correlation Plot)
+        """
+        try:
+            # Try to fetch research data with error handling
+            # Fetch data using load() to get metadata + content
+            arxiv_wrapper = ArxivAPIWrapper(top_k_results=2, doc_content_chars_max=500)
+            docs = arxiv_wrapper.load(f"{cancer_type} cancer survival rate stage {detection_stage} cost")
             
-            # Combine them into a clickable Markdown format
-            evidence_list.append(f"### 📄 [{title}]({link})\n{summary}")
+            evidence_list = []
+            for doc in docs:
+                # Extract URL (Entry ID) and Title from metadata
+                title = doc.metadata.get('Title', 'Research Paper')
+                link = doc.metadata.get('Entry ID', 'https://arxiv.org/')
+                # Get the summary from the page content
+                summary = doc.page_content[:300] + "..."
+                
+                # Combine them into a clickable Markdown format
+                evidence_list.append(f"### 📄 [{title}]({link})\n{summary}")
+            
+            results = "\n\n".join(evidence_list) if evidence_list else "No recent papers found for this specific criteria."
+            
+        except Exception:
+             # Fallback message if API fails ? 
+            results = "⚠️ The ArXiv research database is currently busy or rate-limited. The visualization below still reflects clinical benchmarks."
+    
+        # Build report
+        report = f"""
+        # 📑 Clinical Research Report: {cancer_type}
+        **Patient Profile:** Age {age} | Diagnostic Stage: {detection_stage}
         
-        results = "\n\n".join(evidence_list) if evidence_list else "No recent papers found for this specific criteria."
+        ### 📊 Thesis Analysis
+        Detection at **Stage {detection_stage}** identifies a specific coordinate between diagnostic timing and the resulting clinical-economic burden.
+        Early detection (Stage 0-1) prioritizes curative outcomes at lower systemic costs.
         
-    except Exception:
-         # Fallback message if API fails ? 
-        results = "⚠️ The ArXiv research database is currently busy or rate-limited. The visualization below still reflects clinical benchmarks."
-
-    # Build report
-    report = f"""
-    # 📑 Clinical Research Report: {cancer_type}
-    **Patient Profile:** Age {age} | Diagnostic Stage: {detection_stage}
-    
-    ### 📊 Thesis Analysis
-    Detection at **Stage {detection_stage}** identifies a specific coordinate between diagnostic timing and the resulting clinical-economic burden.
-    Early detection (Stage 0-1) prioritizes curative outcomes at lower systemic costs.
-    
-    ### 🔍 Evidence & Primary Sources:
-    {results}
-    
-    ---
-     **Disclaimer:** This agent uses ArXiv API for research purposes only. Not for medical diagnosis.
-     *ALWAYS FACT CHECK and VERIFY, take it with a grain of salt*
-    """
+        ### 🔍 Evidence & Primary Sources:
+        {results}
+        
+        ---
+         **Disclaimer:** This agent uses ArXiv API for research purposes only. Not for medical diagnosis.
+         *ALWAYS FACT CHECK and VERIFY, take it with a grain of salt*
+        """
     
     # Generate plot
     plot = generate_plot(detection_stage)
