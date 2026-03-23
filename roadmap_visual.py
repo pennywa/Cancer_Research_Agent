@@ -100,6 +100,10 @@ def generate_roadmap_graph():
 with gr.Blocks() as roadmap_page:
     gr.Markdown("## 🌐 Oncology Interaction Network")
     gr.Markdown("An interactive visualization of the AICR cancer types, their progression stages, and the resulting treatment/cost pathways.")
+    gr.Markdown("""
+    > ### ⚠️ Disclaimer: Non-Exhaustive Model
+    > This visualization is a research-oriented roadmap and is **not inclusive of all cancer types, rare subtypes, or every available treatment protocol.** > Relationships shown are simplified for architectural visualization of clinical-economic trends and should not be used for medical decision-making.
+    """)
     
     gr.HTML(value=generate_roadmap_graph())
     
