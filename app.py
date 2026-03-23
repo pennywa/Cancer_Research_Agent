@@ -1,6 +1,7 @@
 import gradio as gr
 from langchain_community.utilities import ArxivAPIWrapper
 import matplotlib.pyplot as plt
+from roadmap_visual import roadmap_page
 
 def generate_plot(stage):
     # Simplified Stages 0 through 4
@@ -118,4 +119,7 @@ with gr.Blocks() as demo:
         outputs=[output_text, output_plot]
     )
 
+    with gr.Tab("Future Roadmap"):
+        roadmap_page.render()
+    
 demo.launch()
