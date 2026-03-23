@@ -27,18 +27,18 @@ def oncology_researcher(cancer_type, detection_stage, age, gender):
     {results}
     
     ---
-    **Thesis Conclusion:** At age {age}, early intervention at {detection_stage} significantly avoids the "exponential cost curve" associated with late-stage {cancer_type}.
+    **Thesis Conclusion:** At age {age}, early intervention at {detection_stage} significantly avoids the cost curve associated with stage {cancer_type}.
     """
     return report
 
 # UI
-with gr.Blocks(theme=gr.themes.Soft()) as demo:
+with gr.Blocks() as demo:
     gr.Markdown("# 🏥 Cancer Research Agent (ArXiv API)")
     
     with gr.Row():
         with gr.Column():
             c_type = gr.Textbox(label="Cancer Type", placeholder="e.g., Lung Cancer")
-            stage = gr.Dropdown(label="Detection Stage", choices=["1A", "1B", "2", "3", "4"])
+            stage = gr.Dropdown(label="Detection Stage", choices=["0", "1", "2", "3", "4"])
             age_input = gr.Slider(minimum=0, maximum=100, value=50, step=1, label="Patient Age")
             gender_input = gr.Checkbox(label="Include Gender Demographics", value=False)
             btn = gr.Button("Generate Research Report", variant="primary")
@@ -53,4 +53,4 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         outputs=output
     )
 
-demo.launch()
+demo.launch(server_name="0.0.0.0", show_error=True)
